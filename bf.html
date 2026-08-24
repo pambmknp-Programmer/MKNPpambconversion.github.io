@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Length → MKNP - Board Feet & Cubic Meter Converter</title>
+  <link rel="stylesheet" href="bfconversion.css" />
+</head>
+<body>
+  <main class="container" role="main">
+    <h1>MKNP - Board Feet & Cubic Meter Converter</h1>
+    <p class="lead">
+      Enter length, width and height (height is treated as thickness). Choose units for each field and see results live.
+    </p>
+
+    <form id="convForm" onsubmit="return false;" class="grid">
+      <fieldset>
+        <legend>Dimensions</legend>
+
+        <label for="length">Length</label>
+        <div class="input-row">
+          <input id="length" name="length" type="number" step="any" min="0" placeholder="e.g. 8" />
+          <select id="lengthUnit" aria-label="Length unit">
+            <option value="ft">ft</option>
+            <option value="in">in</option>
+            <option value="m">m</option>
+            <option value="cm">cm</option>
+            <option value="mm">mm</option>
+          </select>
+        </div>
+
+        <label for="width">Width</label>
+        <div class="input-row">
+          <input id="width" name="width" type="number" step="any" min="0" placeholder="e.g. 6" />
+          <select id="widthUnit" aria-label="Width unit">
+            <option value="in">in</option>
+            <option value="ft">ft</option>
+            <option value="m">m</option>
+            <option value="cm">cm</option>
+            <option value="mm">mm</option>
+          </select>
+        </div>
+
+        <label for="height">Height (Thickness)</label>
+        <div class="input-row">
+          <input id="height" name="height" type="number" step="any" min="0" placeholder="e.g. 2" />
+          <select id="heightUnit" aria-label="Height unit">
+            <option value="in">in</option>
+            <option value="ft">ft</option>
+            <option value="m">m</option>
+            <option value="cm">cm</option>
+            <option value="mm">mm</option>
+          </select>
+        </div>
+
+        <p class="hint">Note: Board feet formula uses thickness in inches and length in feet: BF = (W_in × H_in × L_ft) / 12.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Options</legend>
+        <label class="checkbox">
+          <input id="showDetails" type="checkbox" checked />
+          Show calculation details
+        </label>
+        <label for="precision">Decimal places</label>
+        <input id="precision" type="number" min="0" max="6" value="3" />
+      </fieldset>
+
+      <section id="results" class="results" aria-live="polite">
+        <h2>Results</h2>
+        <div class="result-row">
+          <div class="result-label">Board Feet</div>
+          <div id="boardFeet" class="result-value">—</div>
+        </div>
+        <div class="result-row">
+          <div class="result-label">Cubic Meters</div>
+          <div id="cubicMeters" class="result-value">—</div>
+        </div>
+        <div class="result-row">
+          <div class="result-label">Cubic Feet</div>
+          <div id="cubicFeet" class="result-value">—</div>
+        </div>
+
+        <div id="details" class="details" hidden>
+          <h3>Calculation details</h3>
+          <pre id="detailText">—</pre>
+        </div>
+
+        <div class="actions">
+          <button id="copyBtn" type="button">Copy results</button>
+          <button id="resetBtn" type="button">Reset</button>
+        </div>
+      </section>
+    </form>
+
+    <footer>
+      <small>Assumes rectangular solid. Board feet uses width × thickness (inches) × length (feet) ÷ 12.</small>
+    </footer>
+  </main>
+
+  <script src="bfconversion.js" defer></script>
+</body>
+</html>
