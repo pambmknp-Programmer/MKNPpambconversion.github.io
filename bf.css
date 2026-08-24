@@ -1,0 +1,93 @@
+:root{
+  --bg:#d5b217;
+  --card:#ffffff;
+  --accent:#0069ff;
+  --muted:#6b7280;
+  --radius:10px;
+  --max-width:940px;
+  --gap:16px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #0f172a;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:linear-gradient(180deg,#37ce8a 0%,var(--bg) 100%);
+  margin:0;
+  padding:32px 16px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.container{
+  width:100%;
+  max-width:var(--max-width);
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:24px;
+  box-shadow:0 8px 30px rgba(2,6,23,0.08);
+}
+
+h1{margin:0 0 4px;font-size:1.4rem}
+.lead{margin:0 0 18px;color:var(--muted)}
+
+.grid{
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap:var(--gap);
+  align-items:start;
+}
+
+@media (max-width:840px){
+  .grid{grid-template-columns:1fr}
+}
+.hint{
+    color: (rgba(0,0,0,0.08));
+    font-style: italic;
+}
+fieldset{
+  background: #fbfcf8;
+  border:1px solid #0fbd38;
+  padding:12px;
+  border-radius:8px;
+}
+
+label{display:block;font-weight:600;margin:8px 0 6px;
+ font-weight: bold;}
+.input-row{display:flex;gap:8px}
+.input-row input[type="number"]{
+  flex:1;padding:8px 10px;border-radius:6px;border:1px solid #d7e3f6;background:white;
+  outline:none;font-size:0.95rem;
+}
+select{
+  padding:8px 10px;border-radius:6px;border:1px solid #1dc85c;background:white;
+  font-size:0.95rem;
+}
+
+.hint{font-size:0.85rem;color:var(--muted);margin-top:10px}
+
+.results{
+  background:linear-gradient(180deg,#37e35c,#fbfdff);
+  padding:12px;border-radius:8px;border:1px solid #e9f4ff;
+}
+
+.result-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eef6ff}
+.result-row:last-child{border-bottom:0}
+.result-label{color:var(--muted)}
+.result-value{font-weight:700;font-size:1.1rem;color:var(--accent)}
+
+.details{margin-top:10px;background:#e9e3e5;border-radius:6px;padding:8px;border:1px solid #eef6ff}
+.details pre{margin:0;font-size:0.9rem;color:#102a43;white-space:pre-wrap}
+
+.actions{display:flex;gap:8px;margin-top:12px}
+button{
+  background:var(--accent);color:rgb(255, 255, 255);padding:8px 10px;border-radius:6px;border:0;cursor:pointer;font-weight:600
+}
+button[type="button"]:last-child{background:#e2e8f0;color:#0f172a}
+.checkbox{display:flex;align-items:center;gap:8px;color:var(--muted);margin-top:8px}
+
+footer{margin-top:12px;color:var(--muted);font-size:0.85rem}
