@@ -57,6 +57,76 @@
         <p class="hint">Note: Board feet formula uses thickness in inches and length in feet: BF = (W_in × H_in × L_ft) / 12.</p>
       </fieldset>
 
+      <!-- New: Round log calculators -->
+      <fieldset>
+        <legend>Round log calculators</legend>
+
+        <h4>Felled log</h4>
+        <label for="felledDiameter">Diameter</label>
+        <div class="input-row">
+          <input id="felledDiameter" type="number" step="any" min="0" placeholder="e.g. 0.5" />
+          <select id="felledDiameterUnit" aria-label="Diameter unit">
+            <option value="m">m</option>
+            <option value="cm">cm</option>
+            <option value="mm">mm</option>
+            <option value="in">in</option>
+            <option value="ft">ft</option>
+          </select>
+        </div>
+
+        <label for="felledLength">Length</label>
+        <div class="input-row">
+          <input id="felledLength" type="number" step="any" min="0" placeholder="e.g. 3" />
+          <select id="felledLengthUnit" aria-label="Length unit">
+            <option value="m">m</option>
+            <option value="ft">ft</option>
+            <option value="cm">cm</option>
+            <option value="in">in</option>
+            <option value="mm">mm</option>
+          </select>
+        </div>
+
+        <label for="felledForm">Form factor (0-1)</label>
+        <input id="felledForm" type="number" step="any" min="0" max="1" value="0.9" />
+
+        <label for="felledBark">Bark deduction (%)</label>
+        <input id="felledBark" type="number" step="any" min="0" max="100" value="0" />
+
+        <hr />
+
+        <h4>Standing tree</h4>
+        <label for="standingDiameter">DBH (diameter at breast height)</label>
+        <div class="input-row">
+          <input id="standingDiameter" type="number" step="any" min="0" placeholder="e.g. 0.4" />
+          <select id="standingDiameterUnit" aria-label="Diameter unit">
+            <option value="m">m</option>
+            <option value="cm">cm</option>
+            <option value="mm">mm</option>
+            <option value="in">in</option>
+            <option value="ft">ft</option>
+          </select>
+        </div>
+
+        <label for="standingHeight">Merchantable height</label>
+        <div class="input-row">
+          <input id="standingHeight" type="number" step="any" min="0" placeholder="e.g. 12" />
+          <select id="standingHeightUnit" aria-label="Height unit">
+            <option value="m">m</option>
+            <option value="ft">ft</option>
+            <option value="cm">cm</option>
+            <option value="in">in</option>
+            <option value="mm">mm</option>
+          </select>
+        </div>
+
+        <label for="standingForm">Form factor (0-1)</label>
+        <input id="standingForm" type="number" step="any" min="0" max="1" value="0.4" />
+
+        <label for="standingBark">Bark deduction (%)</label>
+        <input id="standingBark" type="number" step="any" min="0" max="100" value="0" />
+
+      </fieldset>
+
       <fieldset>
         <legend>Options</legend>
         <label class="checkbox">
@@ -76,6 +146,19 @@
         <div class="result-row">
           <div class="result-label">Cubic Meters</div>
           <div id="cubicMeters" class="result-value">—</div>
+        </div>
+        <div class="result-row">
+          <div class="result-label">Cubic Feet</div>
+          <div id="cubicFeet" class="result-value">—</div>
+        </div>
+
+        <div class="result-row">
+          <div class="result-label">Felled log (m³ / ft³)</div>
+          <div id="felledVolume" class="result-value">—</div>
+        </div>
+        <div class="result-row">
+          <div class="result-label">Standing tree (m³ / ft³)</div>
+          <div id="standingVolume" class="result-value">—</div>
         </div>
 
         <div id="details" class="details" hidden>
