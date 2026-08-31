@@ -11,7 +11,6 @@
   const showDetailsEl = document.getElementById('showDetails');
   const boardFeetEl = document.getElementById('boardFeet');
   const cubicMetersEl = document.getElementById('cubicMeters');
-  const cubicFeetEl = document.getElementById('cubicFeet');
   const detailsEl = document.getElementById('details');
   const detailText = document.getElementById('detailText');
   const copyBtn = document.getElementById('copyBtn');
@@ -66,7 +65,6 @@
     if ([L, W, H].some(v => v <= 0 || isNaN(v))) {
       boardFeetEl.textContent = '—';
       cubicMetersEl.textContent = '—';
-      cubicFeetEl.textContent = '—';
       detailText.textContent = 'Enter positive numeric values for Length, Width and Height.';
       detailsEl.hidden = !showDetailsEl.checked;
       return;
@@ -79,7 +77,6 @@
 
     // Volumes
     const volume_m3 = L_m * W_m * H_m; // cubic meters
-    const cubicFeet = volume_m3 / 0.028316846592; // 1 ft^3 = 0.028316846592 m^3
 
     // Board feet calculation:
     // BF = (width_in_inches * thickness_in_inches * length_in_feet) / 12
@@ -91,7 +88,6 @@
     // Render
     boardFeetEl.textContent = formatNumber(boardFeet, p) + ' bf';
     cubicMetersEl.textContent = formatNumber(volume_m3, p) + ' m³';
-    cubicFeetEl.textContent = formatNumber(cubicFeet, p) + ' ft³';
 
     // Details text
     const details = [
@@ -101,7 +97,7 @@
       `Converted: Width = ${formatNumber(W_m, 6)} m (${formatNumber(W_in, 6)} in)`,
       `Converted: Height = ${formatNumber(H_m, 6)} m (${formatNumber(H_in, 6)} in)`,
       '',
-      `Volume = L × W × H = ${formatNumber(volume_m3, 6)} m³ = ${formatNumber(cubicFeet, 6)} ft³`,
+      `Volume = L × W × H = ${formatNumber(volume_m3, 6)} m³`,
       `Board Feet = (W_in × H_in × L_ft) / 12 = (${formatNumber(W_in, 6)} × ${formatNumber(H_in, 6)} × ${formatNumber(L_ft, 6)}) / 12 = ${formatNumber(boardFeet, 6)} bf`
     ].join('\n');
 
@@ -117,7 +113,7 @@
   });
 
   copyBtn.addEventListener('click', async () => {
-    const text = `Board Feet: ${boardFeetEl.textContent}\nCubic meters: ${cubicMetersEl.textContent}\nCubic feet: ${cubicFeetEl.textContent}`;
+    const text = `Board Feet: ${boardFeetEl.textContent}\nCubic meters: ${cubicMetersEl.textContent}`;
     try {
       await navigator.clipboard.writeText(text);
       copyBtn.textContent = 'Copied!';
