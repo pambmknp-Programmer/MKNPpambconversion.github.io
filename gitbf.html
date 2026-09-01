@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumber Volume Converter</title>
+    <link rel="stylesheet" href="gitbf.css">
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/e/e8/Logo_of_the_Department_of_Environment_and_Natural_Resources.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌲🔪 MKNP Edition Lumber Volume Converter 🔪🌲</h1>
+            <p id="DEFINATION"> Mt. Kanla-on Natural Park - Protected Area Management Office (MKNP - PAMO) v.26 </p>
+            <p>Convert board feet and cubic meters for logs and round trees</p>
+        </header>
+
+        <main>
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="board-feet">Calculate bd ft</button>
+                <button class="tab-btn" data-tab="bf-to-m3">Board Feet ↔ Cubic Meters</button>
+                <button class="tab-btn" data-tab="standing-log">Standing Log</button>
+                <button class="tab-btn" data-tab="felled-tree">Felled Round Tree</button>
+            </div>
+
+            <!-- Tab 0: Board Feet Calculator -->
+            <div id="board-feet" class="tab-content active">
+                <h2>Board Feet Calculator</h2>
+                <p class="info-text">Calculate board feet from lumber dimensions (Thickness × Width × Length / 12)</p>
+                
+                <div class="calculator-section">
+                    <div class="input-group full-width">
+                        <label for="bf-thickness">Thickness (inches)</label>
+                        <input type="number" id="bf-thickness" placeholder="Enter thickness in inches" step="0.25" min="0">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="bf-width">Width (inches)</label>
+                        <input type="number" id="bf-width" placeholder="Enter width in inches" step="0.25" min="0">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="bf-length">Length (feet)</label>
+                        <input type="number" id="bf-length" placeholder="Enter length in feet" step="0.1" min="0">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="bf-quantity">Quantity (number of pieces)</label>
+                        <input type="number" id="bf-quantity" placeholder="Number of pieces" step="1" min="1" value="1">
+                    </div>
+
+                    <button class="convert-btn large" onclick="calculateBoardFeet()">Calculate Board Feet</button>
+                </div>
+
+                <div class="results-section">
+                    <div class="result-box">
+                        <p>Board Feet per Piece</p>
+                        <p class="result-value" id="bf-per-piece">0.00</p>
+                    </div>
+                    <div class="result-box">
+                        <p>Total Board Feet</p>
+                        <p class="result-value" id="bf-total">0.00</p>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <div class="result-box">
+                        <p>Total Volume in Cubic Meters</p>
+                        <p class="result-value" id="bf-to-m3-result">0.00</p>
+                    </div>
+                    <div class="result-box">
+                        <p>Lumber Details</p>
+                        <p class="result-details" id="bf-details">No calculation yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 1: Board Feet to Cubic Meters -->
+            <div id="bf-to-m3" class="tab-content">
+                <h2>Basic Conversion</h2>
+                <div class="conversion-section">
+                    <div class="input-group">
+                        <label for="bf-input">Board Feet (BF)</label>
+                        <input type="number" id="bf-input" placeholder="Enter board feet" step="0.01">
+                        <button class="convert-btn" onclick="convertBFtoM3()">Convert</button>
+                    </div>
+                    <div class="result-box">
+                        <p>Cubic Meters (m³)</p>
+                        <p class="result-value" id="bf-result">0.00</p>
+                    </div>
+                </div>
+
+                <div class="conversion-section reverse">
+                    <div class="input-group">
+                        <label for="m3-input">Cubic Meters (m³)</label>
+                        <input type="number" id="m3-input" placeholder="Enter cubic meters" step="0.01">
+                        <button class="convert-btn" onclick="convertM3toBF()">Convert</button>
+                    </div>
+                    <div class="result-box">
+                        <p>Board Feet (BF)</p>
+                        <p class="result-value" id="m3-result">0.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Standing Log -->
+            <div id="standing-log" class="tab-content">
+                <h2>Standing Log Volume Calculator</h2>
+                <p class="info-text">Calculate volume for standing logs using diameter and height measurements</p>
+                
+                <div class="calculator-section">
+                    <div class="input-group full-width">
+                        <label for="standing-diameter">Diameter at Breast Height (DBH) in inches</label>
+                        <input type="number" id="standing-diameter" placeholder="Enter diameter" step="0.1">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="standing-height">Log Height (Merchantable Height) in feet</label>
+                        <input type="number" id="standing-height" placeholder="Enter height" step="0.1">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="standing-formula">Formula</label>
+                        <select id="standing-formula">
+                            <option value="international">International 1/4" Rule</option>
+                            <option value="scribner">Scribner Rule</option>
+                            <option value="doyle">Doyle Rule</option>
+                        </select>
+                    </div>
+
+                    <button class="convert-btn large" onclick="calculateStandingLog()">Calculate Volume</button>
+                </div>
+
+                <div class="results-section">
+                    <div class="result-box">
+                        <p>Volume in Board Feet</p>
+                        <p class="result-value" id="standing-bf">0.00</p>
+                    </div>
+                    <div class="result-box">
+                        <p>Volume in Cubic Meters</p>
+                        <p class="result-value" id="standing-m3">0.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Felled Round Tree -->
+            <div id="felled-tree" class="tab-content">
+                <h2>Felled Round Tree Volume Calculator</h2>
+                <p class="info-text">Calculate volume for felled (fallen) round trees using log measurements</p>
+                
+                <div class="calculator-section">
+                    <div class="input-group full-width">
+                        <label for="felled-large-diameter">Large End Diameter (inches)</label>
+                        <input type="number" id="felled-large-diameter" placeholder="Enter large end diameter" step="0.1">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="felled-small-diameter">Small End Diameter (inches)</label>
+                        <input type="number" id="felled-small-diameter" placeholder="Enter small end diameter" step="0.1">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="felled-length">Log Length (feet)</label>
+                        <input type="number" id="felled-length" placeholder="Enter log length" step="0.1">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label for="felled-formula">Formula</label>
+                        <select id="felled-formula">
+                            <option value="international">International 1/4" Rule</option>
+                            <option value="scribner">Scribner Rule</option>
+                            <option value="doyle">Doyle Rule</option>
+                        </select>
+                    </div>
+
+                    <button class="convert-btn large" onclick="calculateFelledTree()">Calculate Volume</button>
+                </div>
+
+                <div class="results-section">
+                    <div class="result-box">
+                        <p>Volume in Board Feet</p>
+                        <p class="result-value" id="felled-bf">0.00</p>
+                    </div>
+                    <div class="result-box">
+                        <p>Volume in Cubic Meters</p>
+                        <p class="result-value" id="felled-m3">0.00</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>📊 Lumber Volume Converter | Conversions are approximate</p>
+        </footer>
+    </div>
+
+    <script src="gitbf.js"></script>
+</body>
+</html>
