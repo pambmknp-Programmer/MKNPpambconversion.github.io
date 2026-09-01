@@ -69,6 +69,172 @@
             </div>
         </main>
 
+        <!-- Felled Tree Calculator Section -->
+        <section class="tree-section">
+            <h2>Felled Tree (Round Log) Calculator</h2>
+            <div class="tree-grid">
+                <div class="tree-input-group">
+                    <label for="felled-diameter">Diameter:</label>
+                    <div class="input-row">
+                        <input 
+                            type="number" 
+                            id="felled-diameter" 
+                            placeholder="Enter diameter" 
+                            min="0" 
+                            step="0.01"
+                        >
+                        <select id="felled-diameter-unit">
+                            <option value="m">m</option>
+                            <option value="cm">cm</option>
+                            <option value="mm">mm</option>
+                            <option value="in">in</option>
+                            <option value="ft">ft</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tree-input-group">
+                    <label for="felled-length">Length:</label>
+                    <div class="input-row">
+                        <input 
+                            type="number" 
+                            id="felled-length" 
+                            placeholder="Enter length" 
+                            min="0" 
+                            step="0.01"
+                        >
+                        <select id="felled-length-unit">
+                            <option value="m">m</option>
+                            <option value="ft">ft</option>
+                            <option value="cm">cm</option>
+                            <option value="in">in</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tree-input-group">
+                    <label for="felled-form-factor">Form Factor (0-1):</label>
+                    <input 
+                        type="number" 
+                        id="felled-form-factor" 
+                        placeholder="0.9" 
+                        min="0" 
+                        max="1" 
+                        step="0.01"
+                        value="0.9"
+                    >
+                </div>
+
+                <div class="tree-input-group">
+                    <label for="felled-bark-loss">Bark Loss (%):</label>
+                    <input 
+                        type="number" 
+                        id="felled-bark-loss" 
+                        placeholder="0" 
+                        min="0" 
+                        max="100" 
+                        step="0.1"
+                        value="0"
+                    >
+                </div>
+            </div>
+
+            <div class="tree-results">
+                <div class="result-item">
+                    <span>Volume (m³):</span>
+                    <span id="felled-volume-m3" class="result-value">—</span>
+                </div>
+                <div class="result-item">
+                    <span>Volume (ft³):</span>
+                    <span id="felled-volume-ft3" class="result-value">—</span>
+                </div>
+            </div>
+            <button class="clear-btn" onclick="clearFelledTree()">Clear</button>
+        </section>
+
+        <!-- Standing Tree Calculator Section -->
+        <section class="tree-section">
+            <h2>Standing Tree Calculator</h2>
+            <div class="tree-grid">
+                <div class="tree-input-group">
+                    <label for="standing-dbh">DBH (Diameter at Breast Height):</label>
+                    <div class="input-row">
+                        <input 
+                            type="number" 
+                            id="standing-dbh" 
+                            placeholder="Enter DBH" 
+                            min="0" 
+                            step="0.01"
+                        >
+                        <select id="standing-dbh-unit">
+                            <option value="m">m</option>
+                            <option value="cm">cm</option>
+                            <option value="mm">mm</option>
+                            <option value="in">in</option>
+                            <option value="ft">ft</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tree-input-group">
+                    <label for="standing-height">Merchantable Height:</label>
+                    <div class="input-row">
+                        <input 
+                            type="number" 
+                            id="standing-height" 
+                            placeholder="Enter height" 
+                            min="0" 
+                            step="0.01"
+                        >
+                        <select id="standing-height-unit">
+                            <option value="m">m</option>
+                            <option value="ft">ft</option>
+                            <option value="cm">cm</option>
+                            <option value="in">in</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tree-input-group">
+                    <label for="standing-form-factor">Form Factor (0-1):</label>
+                    <input 
+                        type="number" 
+                        id="standing-form-factor" 
+                        placeholder="0.4" 
+                        min="0" 
+                        max="1" 
+                        step="0.01"
+                        value="0.4"
+                    >
+                </div>
+
+                <div class="tree-input-group">
+                    <label for="standing-bark-loss">Bark Loss (%):</label>
+                    <input 
+                        type="number" 
+                        id="standing-bark-loss" 
+                        placeholder="0" 
+                        min="0" 
+                        max="100" 
+                        step="0.1"
+                        value="0"
+                    >
+                </div>
+            </div>
+
+            <div class="tree-results">
+                <div class="result-item">
+                    <span>Volume (m³):</span>
+                    <span id="standing-volume-m3" class="result-value">—</span>
+                </div>
+                <div class="result-item">
+                    <span>Volume (ft³):</span>
+                    <span id="standing-volume-ft3" class="result-value">—</span>
+                </div>
+            </div>
+            <button class="clear-btn" onclick="clearStandingTree()">Clear</button>
+        </section>
+
         <!-- Information Section -->
         <section class="info-section">
             <h3>Conversion Information</h3>
@@ -80,6 +246,14 @@
                 <div class="info-item">
                     <strong>1 Cubic Meter (m³) =</strong>
                     <p>423.776 Board Feet (BF)</p>
+                </div>
+                <div class="info-item">
+                    <strong>Form Factor (Felled):</strong>
+                    <p>Typical: 0.9 (accounts for log shape)</p>
+                </div>
+                <div class="info-item">
+                    <strong>Form Factor (Standing):</strong>
+                    <p>Typical: 0.4 (accounts for taper)</p>
                 </div>
             </div>
             <p class="info-note">
