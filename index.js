@@ -1,248 +1,175 @@
-// Converter script
-(() => {
-  // DOM refs
-  const lengthEl = document.getElementById('length');
-  const widthEl = document.getElementById('width');
-  const heightEl = document.getElementById('height');
-  const lengthUnit = document.getElementById('lengthUnit');
-  const widthUnit = document.getElementById('widthUnit');
-  const heightUnit = document.getElementById('heightUnit');
-  const precisionEl = document.getElementById('precision');
-  const showDetailsEl = document.getElementById('showDetails');
-  const boardFeetEl = document.getElementById('boardFeet');
-  const cubicMetersEl = document.getElementById('cubicMeters');
-  const cubicFeetEl = document.getElementById('cubicFeet');
-  const detailsEl = document.getElementById('details');
-  const detailText = document.getElementById('detailText');
-  const copyBtn = document.getElementById('copyBtn');
-  const resetBtn = document.getElementById('resetBtn');
+// Conversion constants
+const BF_TO_M3 = 0.00236;
+const M3_TO_BF = 423.776;
 
-  // New DOM refs: felled and standing
-  const felledDiameterEl = document.getElementById('felledDiameter');
-  const felledDiameterUnitEl = document.getElementById('felledDiameterUnit');
-  const felledLengthEl = document.getElementById('felledLength');
-  const felledLengthUnitEl = document.getElementById('felledLengthUnit');
-  const felledFormEl = document.getElementById('felledForm');
-  const felledBarkEl = document.getElementById('felledBark');
+// History array
+let conversionHistory = [];
 
-  const standingDiameterEl = document.getElementById('standingDiameter');
-  const standingDiameterUnitEl = document.getElementById('standingDiameterUnit');
-  const standingHeightEl = document.getElementById('standingHeight');
-  const standingHeightUnitEl = document.getElementById('standingHeightUnit');
-  const standingFormEl = document.getElementById('standingForm');
-  const standingBarkEl = document.getElementById('standingBark');
+// Initialize event listeners on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Board Feet input listener
+    document.getElementById('bf-input').addEventListener('input', convertBFToM3);
+    
+    // Cubic Meter input listener
+    document.getElementById('m3-input').addEventListener('input', convertM3ToBF);
+    
+    // Load history from localStorage
+    loadHistory();
+});
 
-  const felledVolumeEl = document.getElementById('felledVolume');
-  const standingVolumeEl = document.getElementById('standingVolume');
-
-  // Unit helpers (meters, inches, feet conversions)
-  function toMeters(value, unit) {
-    if (isNaN(value)) return NaN;
-    switch (unit) {
-      case 'm': return value;
-      case 'cm': return value / 100;
-      case 'mm': return value / 1000;
-      case 'in': return value * 0.0254;
-      case 'ft': return value * 0.3048;
-      default: return NaN;
+/**
+ * Convert Board Feet to Cubic Meters
+ */
+function convertBFToM3() {
+    const bfInput = document.getElementById('bf-input');
+    const m3Output = document.getElementById('bf-to-m3');
+    
+    const bfValue = parseFloat(bfInput.value);
+    
+    if (isNaN(bfValue) || bfInput.value === '') {
+        m3Output.value = '';
+        return;
     }
-  }
-  function toInches(value, unit) {
-    if (isNaN(value)) return NaN;
-    switch (unit) {
-      case 'in': return value;
-      case 'ft': return value * 12;
-      case 'cm': return value / 2.54;
-      case 'mm': return value / 25.4;
-      case 'm': return value / 0.0254;
-      default: return NaN;
+    
+    if (bfValue < 0) {
+        bfInput.value = 0;
+        return;
     }
-  }
-  function toFeet(value, unit) {
-    if (isNaN(value)) return NaN;
-    switch (unit) {
-      case 'ft': return value;
-      case 'in': return value / 12;
-      case 'cm': return (value / 100) / 0.3048;
-      case 'mm': return (value / 1000) / 0.3048;
-      case 'm': return value / 0.3048;
-      default: return NaN;
+    
+    const m3Value = bfValue * BF_TO_M3;
+    m3Output.value = m3Value.toFixed(4);
+    
+    // Add to history
+    addToHistory(`${bfValue.toFixed(2)} BF = ${m3Value.toFixed(4)} m³`);
+}
+
+/**
+ * Convert Cubic Meters to Board Feet
+ */
+function convertM3ToBF() {
+    const m3Input = document.getElementById('m3-input');
+    const bfOutput = document.getElementById('m3-to-bf');
+    
+    const m3Value = parseFloat(m3Input.value);
+    
+    if (isNaN(m3Value) || m3Input.value === '') {
+        bfOutput.value = '';
+        return;
     }
-  }
-
-  function formatNumber(value, decimals) {
-    if (!isFinite(value)) return '—';
-    return Number(value).toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
-  }
-
-  // Round log: cylinder volume helper
-  function cylinderVolume(diameter_m, length_m) {
-    const r = diameter_m / 2;
-    return Math.PI * r * r * length_m; // m^3
-  }
-
-  function computeAndRender() {
-    const p = Math.max(0, Math.min(6, Number(precisionEl.value) || 3));
-    const L = Number(lengthEl.value);
-    const W = Number(widthEl.value);
-    const H = Number(heightEl.value);
-
-    if ([L, W, H].some(v => v <= 0 || isNaN(v))) {
-      boardFeetEl.textContent = '—';
-      cubicMetersEl.textContent = '—';
-      cubicFeetEl.textContent = '—';
-      detailText.textContent = 'Enter positive numeric values for Length, Width and Height.';
-      detailsEl.hidden = !showDetailsEl.checked;
-    } else {
-      // Convert to meters
-      const L_m = toMeters(L, lengthUnit.value);
-      const W_m = toMeters(W, widthUnit.value);
-      const H_m = toMeters(H, heightUnit.value);
-
-      // Volumes
-      const volume_m3 = L_m * W_m * H_m; // cubic meters
-      const cubicFeet = volume_m3 / 0.028316846592; // 1 ft^3 = 0.028316846592 m^3
-
-      // Board feet calculation:
-      // BF = (width_in_inches * thickness_in_inches * length_in_feet) / 12
-      const W_in = toInches(W, widthUnit.value);
-      const H_in = toInches(H, heightUnit.value); // treat height as thickness
-      const L_ft = toFeet(L, lengthUnit.value);
-      const boardFeet = (W_in * H_in * L_ft) / 12;
-
-      // Render
-      boardFeetEl.textContent = formatNumber(boardFeet, p) + ' bf';
-      cubicMetersEl.textContent = formatNumber(volume_m3, p) + ' m³';
-      cubicFeetEl.textContent = formatNumber(cubicFeet, p) + ' ft³';
-
-      // Details text base
-      const details = [
-        `Inputs: Length = ${L} ${lengthUnit.value}, Width = ${W} ${widthUnit.value}, Height (thickness) = ${H} ${heightUnit.value}`,
-        '',
-        `Converted: Length = ${formatNumber(L_m, 6)} m (${formatNumber(L_ft, 6)} ft)`,
-        `Converted: Width = ${formatNumber(W_m, 6)} m (${formatNumber(W_in, 6)} in)`,
-        `Converted: Height = ${formatNumber(H_m, 6)} m (${formatNumber(H_in, 6)} in)`,
-        '',
-        `Volume = L × W × H = ${formatNumber(volume_m3, 6)} m³ = ${formatNumber(cubicFeet, 6)} ft³`,
-        `Board Feet = (W_in × H_in × L_ft) / 12 = (${formatNumber(W_in, 6)} × ${formatNumber(H_in, 6)} × ${formatNumber(L_ft, 6)}) / 12 = ${formatNumber(boardFeet, 6)} bf`
-      ].join('\n');
-
-      detailText.textContent = details;
-      detailsEl.hidden = !showDetailsEl.checked;
+    
+    if (m3Value < 0) {
+        m3Input.value = 0;
+        return;
     }
+    
+    const bfValue = m3Value * M3_TO_BF;
+    bfOutput.value = bfValue.toFixed(2);
+    
+    // Add to history
+    addToHistory(`${m3Value.toFixed(4)} m³ = ${bfValue.toFixed(2)} BF`);
+}
 
-    // --- Felled log computation ---
-    const d_f = Number(felledDiameterEl.value);
-    const d_f_unit = felledDiameterUnitEl.value;
-    const l_f = Number(felledLengthEl.value);
-    const l_f_unit = felledLengthUnitEl.value;
-    const form_f = Math.max(0, Math.min(1, Number(felledFormEl.value) || 0.9));
-    const bark_f = Math.max(0, Math.min(100, Number(felledBarkEl.value) || 0));
+/**
+ * Clear Board Feet input
+ */
+function clearBFInput() {
+    document.getElementById('bf-input').value = '';
+    document.getElementById('bf-to-m3').value = '';
+}
 
-    let felled_m3 = NaN;
-    if (!(isNaN(d_f) || d_f <= 0 || isNaN(l_f) || l_f <= 0)) {
-      const d_f_m = toMeters(d_f, d_f_unit);
-      const l_f_m = toMeters(l_f, l_f_unit);
-      const raw = cylinderVolume(d_f_m, l_f_m);
-      felled_m3 = raw * form_f * (1 - bark_f / 100);
+/**
+ * Clear Cubic Meter input
+ */
+function clearM3Input() {
+    document.getElementById('m3-input').value = '';
+    document.getElementById('m3-to-bf').value = '';
+}
+
+/**
+ * Add conversion to history
+ */
+function addToHistory(conversion) {
+    const timestamp = new Date();
+    const timeString = timestamp.toLocaleTimeString();
+    
+    // Create history entry
+    const historyEntry = {
+        conversion: conversion,
+        time: timeString,
+        timestamp: timestamp.getTime()
+    };
+    
+    // Add to array (limit to 20 entries)
+    conversionHistory.unshift(historyEntry);
+    if (conversionHistory.length > 20) {
+        conversionHistory.pop();
     }
+    
+    // Save to localStorage
+    saveHistory();
+    
+    // Update UI
+    displayHistory();
+}
 
-    // --- Standing tree computation (basal area * height * form factor) ---
-    const d_s = Number(standingDiameterEl.value);
-    const d_s_unit = standingDiameterUnitEl.value;
-    const h_s = Number(standingHeightEl.value);
-    const h_s_unit = standingHeightUnitEl.value;
-    const form_s = Math.max(0, Math.min(1, Number(standingFormEl.value) || 0.4));
-    const bark_s = Math.max(0, Math.min(100, Number(standingBarkEl.value) || 0));
-
-    let standing_m3 = NaN;
-    if (!(isNaN(d_s) || d_s <= 0 || isNaN(h_s) || h_s <= 0)) {
-      const d_s_m = toMeters(d_s, d_s_unit);
-      const h_s_m = toMeters(h_s, h_s_unit);
-      const basal_area = Math.PI * Math.pow(d_s_m / 2, 2); // m^2
-      const raw = basal_area * h_s_m * form_s; // m^3
-      standing_m3 = raw * (1 - bark_s / 100);
+/**
+ * Display conversion history
+ */
+function displayHistory() {
+    const historyList = document.getElementById('history-list');
+    
+    if (conversionHistory.length === 0) {
+        historyList.innerHTML = '<p class="empty-history">No conversions yet. Start converting!</p>';
+        return;
     }
-
-    // Render felled and standing results
-    const felled_ft3 = isFinite(felled_m3) ? felled_m3 / 0.028316846592 : NaN;
-    const standing_ft3 = isFinite(standing_m3) ? standing_m3 / 0.028316846592 : NaN;
-
-    const p = Math.max(0, Math.min(6, Number(precisionEl.value) || 3));
-    felledVolumeEl.textContent = (isFinite(felled_m3) ? `${formatNumber(felled_m3, p)} m³ / ${formatNumber(felled_ft3, p)} ft³` : '—');
-    standingVolumeEl.textContent = (isFinite(standing_m3) ? `${formatNumber(standing_m3, p)} m³ / ${formatNumber(standing_ft3, p)} ft³` : '—');
-
-    // Append felled/standing details when details visible
-    if (!detailsEl.hidden) {
-      const more = [
-        '',
-        '--- Round log calculations ---',
-        felled_m3 ? `Felled log: diameter = ${d_f} ${d_f_unit}, length = ${l_f} ${l_f_unit}, form = ${form_f}, bark% = ${bark_f} => ${formatNumber(felled_m3, 6)} m³` : 'Felled log: enter diameter and length',
-        standing_m3 ? `Standing tree: DBH = ${d_s} ${d_s_unit}, height = ${h_s} ${h_s_unit}, form = ${form_s}, bark% = ${bark_s} => ${formatNumber(standing_m3, 6)} m³` : 'Standing tree: enter DBH and merchantable height'
-      ].join('\n');
-
-      detailText.textContent = detailText.textContent + more;
-    }
-  }
-
-  // Events
-  ['input', 'change'].forEach(ev => {
-    [lengthEl, widthEl, heightEl, lengthUnit, widthUnit, heightUnit, precisionEl, showDetailsEl,
-     felledDiameterEl, felledDiameterUnitEl, felledLengthEl, felledLengthUnitEl, felledFormEl, felledBarkEl,
-     standingDiameterEl, standingDiameterUnitEl, standingHeightEl, standingHeightUnitEl, standingFormEl, standingBarkEl
-    ].forEach(el => {
-      el.addEventListener(ev, computeAndRender, { passive: true });
+    
+    let historyHTML = '';
+    conversionHistory.forEach((entry, index) => {
+        historyHTML += `
+            <div class="history-item">
+                <div class="history-item-text">${entry.conversion}</div>
+                <div class="history-item-time">${entry.time}</div>
+            </div>
+        `;
     });
-  });
+    
+    historyList.innerHTML = historyHTML;
+}
 
-  copyBtn.addEventListener('click', async () => {
-    const text = `Board Feet: ${boardFeetEl.textContent}\nCubic meters: ${cubicMetersEl.textContent}\nCubic feet: ${cubicFeetEl.textContent}\nFelled log: ${felledVolumeEl.textContent}\nStanding tree: ${standingVolumeEl.textContent}`;
-    try {
-      await navigator.clipboard.writeText(text);
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => (copyBtn.textContent = 'Copy results'), 1400);
-    } catch (err) {
-      copyBtn.textContent = 'Copy failed';
-      setTimeout(() => (copyBtn.textContent = 'Copy results'), 1400);
+/**
+ * Clear conversion history
+ */
+function clearHistory() {
+    if (confirm('Are you sure you want to clear the conversion history?')) {
+        conversionHistory = [];
+        saveHistory();
+        displayHistory();
     }
-  });
+}
 
-  resetBtn.addEventListener('click', () => {
-    lengthEl.value = '';
-    widthEl.value = '';
-    heightEl.value = '';
-    lengthUnit.value = 'ft';
-    widthUnit.value = 'in';
-    heightUnit.value = 'in';
-    precisionEl.value = '3';
-    showDetailsEl.checked = true;
+/**
+ * Save history to localStorage
+ */
+function saveHistory() {
+    try {
+        localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
+    } catch (e) {
+        console.error('Error saving history:', e);
+    }
+}
 
-    // reset new inputs
-    felledDiameterEl.value = '';
-    felledDiameterUnitEl.value = 'm';
-    felledLengthEl.value = '';
-    felledLengthUnitEl.value = 'm';
-    felledFormEl.value = '0.9';
-    felledBarkEl.value = '0';
-
-    standingDiameterEl.value = '';
-    standingDiameterUnitEl.value = 'm';
-    standingHeightEl.value = '';
-    standingHeightUnitEl.value = 'm';
-    standingFormEl.value = '0.4';
-    standingBarkEl.value = '0';
-
-    computeAndRender();
-  });
-
-  // initial demo values
-  lengthEl.value = 8;
-  lengthUnit.value = 'ft';
-  widthEl.value = 6;
-  widthUnit.value = 'in';
-  heightEl.value = 2;
-  heightUnit.value = 'in';
-
-  // leave new fields empty by default
-  computeAndRender();
-})();
+/**
+ * Load history from localStorage
+ */
+function loadHistory() {
+    try {
+        const saved = localStorage.getItem('conversionHistory');
+        if (saved) {
+            conversionHistory = JSON.parse(saved);
+            displayHistory();
+        }
+    } catch (e) {
+        console.error('Error loading history:', e);
+        conversionHistory = [];
+    }
+}
